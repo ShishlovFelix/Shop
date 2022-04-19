@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Grid, MenuItem, TextField } from "@mui/material";
-import Select from "@mui/material/Select";
+import { Box, Button, Grid, MenuItem, Select, TextField } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import { useFormik } from "formik";
 import products from "../../api/products";
@@ -8,6 +7,7 @@ import products from "../../api/products";
 const CreateProduct = () => {
   const [allCategories, setAllCategories] = useState<string[]>([]);
 
+  const [state, setState] = useState<string>("");
   useEffect(() => {
     products.getAllCategories().then((e) => setAllCategories(e.data));
   }, []);
@@ -23,9 +23,11 @@ const CreateProduct = () => {
       ratingCount: "",
     },
     onSubmit: (values) => {
+      values.category = state;
       products.createProduct(values);
     },
   });
+
   return (
     <Grid container>
       <Grid xs={12} sx={{ textAlign: "center" }}>
@@ -76,10 +78,10 @@ const CreateProduct = () => {
                   sx={{ mt: 1, width: "12%" }}
                   id="category"
                   label="Select category"
-                  value={formik.values.category}
-                  onChange={(e) =>
-                    formik.setFieldValue(e.target.value, "category")
-                  }
+                  value={state}
+                  onChange={(e) => {
+                    setState(e.target.value);
+                  }}
                   variant="standard"
                 >
                   {allCategories.map((category) => (
@@ -106,6 +108,8 @@ const CreateProduct = () => {
                   id="ratingRate"
                   label="Rating Rate"
                   type="number"
+                  onChange={formik.handleChange}
+                  value={formik.values.ratingRate}
                   InputLabelProps={{
                     shrink: true,
                   }}
