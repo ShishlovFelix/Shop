@@ -1,15 +1,27 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
+import reportWebVitals from "./reportWebVitals";
+import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
+import { Theme } from "@mui/material/styles/createTheme";
+import Router from "./app/Router";
+import { store } from "./app/store";
+import { Provider } from "react-redux";
+
+const theme: Theme = createTheme({
+  palette: { mode: "dark" },
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router />
+      </ThemeProvider>
+    </Provider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change
