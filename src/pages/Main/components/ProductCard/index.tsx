@@ -1,17 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Card from "@mui/material/Card";
-import { Box, CardActionArea, Rating } from "@mui/material";
+import { Box, CardActionArea, Checkbox, Rating } from "@mui/material";
 import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { IProduct } from "../../../../api/products/types";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import Fab from "@mui/material/Fab";
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import user from "../../../../api/user";
 
-const ProductCard: React.FC<IProduct> = (props) => {
-  const { id, image, title, ratingRate, ratingCount, price } = props;
+interface OwnProps {
+  isInWishList: boolean;
+}
+
+const ProductCard: React.FC<IProduct & OwnProps> = (props) => {
+  const { id, image, title, ratingRate, ratingCount, price, isInWishList } =
+    props;
+  const [checked, setChecked] = useState<boolean>(isInWishList);
   const rightPrice = Math.floor(price * 30);
+  const label = { inputProps: { "aria-label": "Checkbox demo" } };
+  console.log(checked, "ProductCard!!!!!!!!!!!");
   return (
     <Link style={{ textDecoration: "none" }} to={`/product/${id}`}>
       <Card sx={{ mt: 9 }}>
@@ -46,18 +54,42 @@ const ProductCard: React.FC<IProduct> = (props) => {
               <Typography variant="h4" color="coral">
                 {rightPrice} UAH
               </Typography>
-              <Fab disabled aria-label="like">
-                <FavoriteIcon />
-              </Fab>
+              <span
+                onClick={(event: React.MouseEvent) => event.stopPropagation()}
+              >
+                <Checkbox
+                  checked={checked}
+                  {...label}
+                  icon={<FavoriteBorder />}
+                  checkedIcon={<Favorite />}
+                  defaultChecked={isInWishList}
+                  onChange={(e) => {
+                    if (checked === true) {
+                      user.deleteFromWishList(String(id));
+                    } else {
+                      user.addToWishList(String(id));
+                    }
+                    return setChecked(e.target.checked);
+                  }}
+                />
+              </span>
             </Box>
-            <Box sx={{ fontSize: 24, mt: 1 }}>
+            <Box
+              sx={{
+                fontSize: 24,
+                mt: 1,
+                display: "flex",
+              }}
+            >
               <Rating
                 sx={{ mt: 1, mr: 9 }}
                 name="rate"
                 defaultValue={ratingRate}
                 readOnly
               />
-              {ratingCount} Reviews
+              <Typography sx={{ fontSize: 21 }} color="white">
+                {ratingCount} Reviews
+              </Typography>
             </Box>
           </CardContent>
         </CardActionArea>

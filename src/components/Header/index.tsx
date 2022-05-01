@@ -19,7 +19,6 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import products from "../../api/products";
 import { SearchProducts } from "./Search";
-import auth from "api/auth";
 
 const Header: React.FC = () => {
   const [allCategories, setAllCategories] = useState<string[]>([]);

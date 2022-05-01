@@ -2,19 +2,26 @@ import React, { useEffect, useState } from "react";
 import { IProduct } from "../../api/products/types";
 import { useParams } from "react-router-dom";
 import products from "../../api/products";
-import { Box, Button, Container, Grid, Rating } from "@mui/material";
+import { Box, Button, Checkbox, Container, Grid, Rating } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import Fab from "@mui/material/Fab";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import Loader from "../../components/Loader";
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import user from "../../api/user";
 
 const Product = () => {
+  const { productId } = useParams<{ productId: string }>();
   const [productData, setProductData] = useState<IProduct | undefined>(
     undefined
   );
-
-  const { productId } = useParams<{ productId: string }>();
-
+  const [allWishList, setWishList] = useState<IProduct[]>([]);
+  useEffect(() => {
+    user.getUserWishlist().then((e) => setWishList(e.data));
+  }, []);
+  const isInWishListFind = allWishList.find((wishProduct) => {
+    return wishProduct.id === productId;
+  });
+  const isInWishList = Boolean(isInWishListFind);
+  const [checked, setChecked] = useState<boolean>(isInWishList);
   useEffect(() => {
     if (productId) {
       products
@@ -22,16 +29,18 @@ const Product = () => {
         .then((res) => setProductData(res.data));
     }
   }, [productId]);
-
   if (!productData) {
     return <Loader />;
   }
-
+  if (!allWishList.length) {
+    return <Loader />;
+  }
+  console.log(isInWishList, "Product!!!!!!!!!!!");
+  console.log(checked, "Product!!!!!!!!!!!22222");
   const { title, price, description, category, image, ratingRate } =
     productData;
-
   const rightPrice = Math.floor(price * 30);
-
+  const label = { inputProps: { "aria-label": "Checkbox demo" } };
   return (
     <Container>
       <Grid container>
@@ -86,9 +95,20 @@ const Product = () => {
                   Buy
                 </Typography>
               </Button>
-              <Fab disabled aria-label="like">
-                <FavoriteIcon />
-              </Fab>
+              <Checkbox
+                {...label}
+                icon={<FavoriteBorder />}
+                checkedIcon={<Favorite />}
+                defaultChecked={isInWishList}
+                onChange={(e) => {
+                  if (isInWishList === true) {
+                    user.deleteFromWishList(String(productId));
+                  } else {
+                    user.addToWishList(String(productId));
+                  }
+                  return setChecked(e.target.checked);
+                }}
+              />
             </Box>
           </Box>
 

@@ -77,7 +77,6 @@ const CreateProduct = () => {
                 <Select
                   sx={{ mt: 1, width: "12%" }}
                   id="category"
-                  label="Select category"
                   value={state}
                   onChange={(e) => {
                     setState(e.target.value);
@@ -104,7 +103,7 @@ const CreateProduct = () => {
               </Box>
               <Box>
                 <TextField
-                  sx={{ mt: 2 }}
+                  sx={{ mt: 2, width: "12%" }}
                   id="ratingRate"
                   label="Rating Rate"
                   type="number"
@@ -113,6 +112,7 @@ const CreateProduct = () => {
                   InputLabelProps={{
                     shrink: true,
                   }}
+                  InputProps={{ inputProps: { min: 0, max: 5 } }}
                   variant="standard"
                 />
               </Box>

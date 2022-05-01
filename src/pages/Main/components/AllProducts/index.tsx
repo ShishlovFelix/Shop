@@ -8,9 +8,14 @@ import { Grid } from "@mui/material";
 import ProductCard from "../ProductCard";
 import Loader from "../../../../components/Loader";
 import { useAppSelector } from "../../../../app/store/hooks";
+import user from "../../../../api/user";
 
 const AllProducts = () => {
   const [allProducts, setAllProducts] = useState<IProduct[]>([]);
+  const [allWishList, setWishList] = useState<IProduct[]>([]);
+  useEffect(() => {
+    user.getUserWishlist().then((e) => setWishList(e.data));
+  }, []);
   const searchValue = useAppSelector((state) => state.search.search);
 
   const filterProducts = allProducts.filter((product) => {
@@ -26,9 +31,17 @@ const AllProducts = () => {
   }
 
   const allProductsElement = filterProducts.map((product) => {
+    const isInWishListFind = allWishList.find((wishProduct) => {
+      return wishProduct.id === product.id;
+    });
+    const isInWishList = Boolean(isInWishListFind);
+
+    if (!allWishList.length) {
+      return <Loader />;
+    }
     return (
       <Grid item sx={{ padding: "0px 5px" }} xs={3}>
-        <ProductCard {...product}></ProductCard>
+        <ProductCard {...product} isInWishList={isInWishList}></ProductCard>
       </Grid>
     );
   });
